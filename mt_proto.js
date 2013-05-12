@@ -1419,6 +1419,3 @@ run();
   // {{MODULE_ADDITIONS}}
 
 _init(1337);
-console.log(_rnd()|0);
-console.log(_rnd()|0);
-console.log(_rnd()|0);
