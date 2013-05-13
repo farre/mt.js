@@ -1,9 +1,9 @@
 if (!Math.imul) Math.imul = function(a, b) {
-  var ah  = a >>> 16;
-  var al = a & 0xffff;
-  var bh  = b >>> 16;
-  var bl = b & 0xffff;
-  return (al * bl + ((ah * bl + al * bh) << 16)) | 0;
+    var ah  = a >>> 16;
+    var al = a & 0xffff;
+    var bh  = b >>> 16;
+    var bl = b & 0xffff;
+    return (al * bl + ((ah * bl + al * bh) << 16)) | 0;
 };
 
 function MersenneTwister(seed) {
@@ -17,19 +17,17 @@ function MersenneTwister(seed) {
         function random() {
             var a = 0, b = 0, c = 0, d = 0;
             a = heapi32[625] | 0;
-            b = ((a + 1 | 0) >>> 0) % 624;
-            c = (a << 2) | 0;
-            d = heapi32[(b << 2) >> 2] | 0;
-            heapi32[c >> 2] =
-                -(d & 1) & -1727483681 ^
-                heapi32[(((a + 397 | 0) >>> 0) % 624 << 2) >> 2] ^
-                (d & 2147483646 | heapi32[c >> 2] & -2147483648) >>> 1;
-            c = heapi32[(heapi32[625] << 2) >> 2] | 0;
-            d = c >>> 11 ^ c;
+            b = (a >>> 0 < 2496) ? a + 4 | 0 : 0;
+            c = heapi32[b >> 2] | 0;
+            d = -(c & 1) & -1727483681 ^
+                heapi32[(a + 1588 - (a >>> 0 < 912 ? 0 : 2496)) >> 2] ^
+                (c & 2147483646 | heapi32[a >> 2] & -2147483648) >>> 1;
+            c = d >>> 11 ^ d;
+            heapi32[a >> 2] = d;
             heapi32[625] = b;
-            b = d << 7 & -1658038656 ^ d;
-            d = b << 15 & -272236544 ^ b;
-            return d >>> 18 ^ d | 0;
+            b = c << 7 & -1658038656 ^ c;
+            c = b << 15 & -272236544 ^ b;
+            return c >>> 18 ^ c | 0;
         }
 
         function initialize(seed) {
