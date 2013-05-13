@@ -6,13 +6,12 @@ if (!Math.imul) Math.imul = function(a, b) {
   return (al * bl + ((ah * bl + al * bh) << 16)) | 0;
 };
 
-function createMersenneTwister(seed) {
+function MersenneTwister(seed) {
     var buffer = new ArrayBuffer(4096);
     var global = {Math: Math, Int32Array: Int32Array};
     var asm = function (global, env, buffer) {
         "use asm";
         var heapi32 = new global.Int32Array(buffer);
-
         var imul = global.Math.imul;
 
         function random() {
@@ -33,7 +32,7 @@ function createMersenneTwister(seed) {
             return d >>> 18 ^ d | 0;
         }
 
-        function init(seed) {
+        function initialize(seed) {
             seed = seed | 0;
             var a = 1, b = 0, c = 0;
             heapi32[0] = seed;
@@ -55,9 +54,15 @@ function createMersenneTwister(seed) {
 
         return {
             random: random,
-            init: init,
+            initialize: initialize,
         }
     }(global, {}, buffer);
-    asm.init(seed);
-    return asm.random;
+
+    asm.initialize(seed | 0);
+
+    this.random = asm.random;
+    this.initialize = function (seed) {
+	new Int32Array(buffer, 2500, 1)[0] = 0;
+	asm.initialize(seed);;
+    }
 }
