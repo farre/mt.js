@@ -17,16 +17,16 @@ function MersenneTwister(seed) {
         function random() {
             var a = 0, b = 0, c = 0, d = 0;
             a = heapi32[625] | 0;
-            b = (a >>> 0 < 2496) ? a + 4 | 0 : 0;
+            b = a + ((a >>> 0 < 2496) ? 4 : -2496) | 0;
             c = heapi32[b >> 2] | 0;
-            d = -(c & 1) & -1727483681 ^
-                heapi32[(a + 1588 - (a >>> 0 < 912 ? 0 : 2496)) >> 2] ^
-                (c & 2147483646 | heapi32[a >> 2] & -2147483648) >>> 1;
+            d = -(c & 1) & 0x9908b0df ^
+                heapi32[(a + (a >>> 0 < 912 ? 1588 : -908)) >> 2] ^
+                (c & 0x7ffffffe | heapi32[a >> 2] & 0x80000000) >>> 1;
             c = d >>> 11 ^ d;
             heapi32[a >> 2] = d;
             heapi32[625] = b;
-            b = c << 7 & -1658038656 ^ c;
-            c = b << 15 & -272236544 ^ b;
+            b = c << 7 & 0x9d2c5680 ^ c;
+            c = b << 15 & 0xefc60000 ^ b;
             return c >>> 18 ^ c | 0;
         }
 
@@ -36,7 +36,7 @@ function MersenneTwister(seed) {
             heapi32[0] = seed;
             b = seed;
             while (1) {
-                seed = imul(b >>> 30 ^ b, 1812433253) + a | 0;
+                seed = imul(b >>> 30 ^ b, 0x6c078965) + a | 0;
                 heapi32[(a << 2) >> 2] = seed;
                 c = a + 1 | 0;
                 if (c >>> 0 < 624) {
@@ -46,8 +46,8 @@ function MersenneTwister(seed) {
                     break;
                 }
             }
-            heapi32[2496 >> 2] = 0;
-            return;
+            heapi32[624] = 0;
+            heapi32[625] = 0;
         }
 
         return {
@@ -56,11 +56,8 @@ function MersenneTwister(seed) {
         }
     }(global, {}, buffer);
 
-    asm.initialize(seed | 0);
+    asm.initialize(seed ? seed | 0 : new Date().getTime());
 
     this.random = asm.random;
-    this.initialize = function (seed) {
-	new Int32Array(buffer, 2500, 1)[0] = 0;
-	asm.initialize(seed);;
-    }
+    this.initialize = asm.initialize;
 }
